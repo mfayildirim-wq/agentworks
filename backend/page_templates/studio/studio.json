@@ -1,0 +1,11 @@
+{
+  "label": "Studio",
+  "description": "Modernes Hero-Layout mit Karten-Raster",
+  "placeholders": [
+    {"key": "title", "label": "Titel"},
+    {"key": "lead", "label": "Untertitel"},
+    {"key": "card1", "label": "Karte 1"},
+    {"key": "card2", "label": "Karte 2"},
+    {"key": "card3", "label": "Karte 3"}
+  ]
+}

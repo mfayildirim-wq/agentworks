@@ -1,0 +1,10 @@
+{
+  "label": "Journal",
+  "description": "Ruhiges, elegantes Dokument-Layout",
+  "placeholders": [
+    {"key": "title", "label": "Titel"},
+    {"key": "intro", "label": "Einleitung"},
+    {"key": "section1", "label": "Abschnitt 1"},
+    {"key": "section2", "label": "Abschnitt 2"}
+  ]
+}

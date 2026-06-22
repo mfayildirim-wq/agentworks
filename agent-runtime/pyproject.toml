@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent-runtime"
+version = "0.1.0"
+description = "AgentWorks agent abstraction + AutoGen adapter"
+requires-python = ">=3.11"
+dependencies = [
+  "pydantic>=2.6",
+  "anthropic>=0.40",
+  "autogen-agentchat>=0.4.0",
+  "autogen-ext[anthropic,openai,mcp]>=0.4.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-asyncio>=0.23", "ruff>=0.5"]
+
+[tool.setuptools.packages.find]
+include = ["agent_runtime*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "RUF"]

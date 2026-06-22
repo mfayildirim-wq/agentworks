@@ -1,0 +1,181 @@
+# Production deployment of AgentWorks.
+#
+# Only the frontend joins `proxy-net` (an external nginx-proxy + acme-companion
+# handles routing + Let's-Encrypt TLS automatically via the VIRTUAL_HOST/LETSENCRYPT_*
+# vars). Backend, worker, cron, DB and Redis stay on the internal network and are
+# not publicly exposed.
+#
+# Set your public domain and secrets in infra/.env (copy infra/.env.example first).
+#
+# Start:  docker compose -f infra/docker-compose.prod.yml --env-file infra/.env up -d --build
+
+x-backend-env: &backend-env
+  DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-agentworks}:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.prod}@db:5432/${POSTGRES_DB:-agentworks}
+  REDIS_URL: redis://redis:6379/0
+  ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:?set ANTHROPIC_API_KEY in .env.prod}
+  OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+  DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+  AGENT_SECRET_KEY: ${AGENT_SECRET_KEY:?set AGENT_SECRET_KEY in .env.prod (Fernet-Key)}
+  GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+  GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+  GOOGLE_OAUTH_REDIRECT_URI: ${GOOGLE_OAUTH_REDIRECT_URI:-https://${PUBLIC_DOMAIN:?set PUBLIC_DOMAIN in .env}/oauth/google/callback}
+  VOYAGE_API_KEY: ${VOYAGE_API_KEY:-}
+  STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+  AUTH_DISABLED_FOR_TESTS: ${AUTH_DISABLED_FOR_TESTS:-0}
+  CORS_ORIGINS: '["https://${PUBLIC_DOMAIN:?set PUBLIC_DOMAIN in .env}"]'
+  ENV: prod
+  LOG_LEVEL: ${LOG_LEVEL:-INFO}
+  OLLAMA_URL: ${OLLAMA_URL:-http://172.17.0.1:11434}
+  OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen2.5:3b}
+  MEDIA_ROOT: /app/media
+  PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-https://${PUBLIC_DOMAIN:?set PUBLIC_DOMAIN in .env}}
+  SEARXNG_URL: ${SEARXNG_URL:-http://searxng:8080}
+  # Benachrichtigungen (leer = Kanal deaktiviert)
+  SMTP_HOST: ${SMTP_HOST:-}
+  SMTP_PORT: ${SMTP_PORT:-587}
+  SMTP_USER: ${SMTP_USER:-}
+  SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+  MAIL_FROM: ${MAIL_FROM:-}
+  TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+  TELEGRAM_BOT_USERNAME: ${TELEGRAM_BOT_USERNAME:-}
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: agentworks-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-agentworks}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.prod}
+      POSTGRES_DB: ${POSTGRES_DB:-agentworks}
+    volumes:
+      - agentworks_db:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    networks: [agentworks-internal]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-agentworks}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: agentworks-redis
+    restart: unless-stopped
+    volumes:
+      - agentworks_redis:/data
+    networks: [agentworks-internal]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile
+    image: agentworks-backend
+    container_name: agentworks-backend
+    restart: unless-stopped
+    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    environment: *backend-env
+    depends_on:
+      db: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    networks: [agentworks-internal]
+    volumes:
+      - agentworks_media:/app/media
+
+  worker:
+    image: agentworks-backend
+    container_name: agentworks-worker
+    restart: unless-stopped
+    command: dramatiq app.workers
+    environment: *backend-env
+    depends_on:
+      backend: {condition: service_started}
+      db: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    networks: [agentworks-internal]
+    volumes:
+      - agentworks_media:/app/media
+
+  cron:
+    image: agentworks-backend
+    container_name: agentworks-cron
+    restart: unless-stopped
+    command: python -m app.cron_runner
+    environment: *backend-env
+    depends_on:
+      backend: {condition: service_started}
+      db: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    networks: [agentworks-internal]
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    image: agentworks-frontend
+    container_name: agentworks-frontend
+    restart: unless-stopped
+    environment:
+      # Next.js-Standalone bindet sonst an die Docker-HOSTNAME-IP (nur internes Netz)
+      # → nginx-proxy im proxy-net käme nicht ran (502). 0.0.0.0 = alle Interfaces.
+      HOSTNAME: 0.0.0.0
+      PORT: "3000"
+      NEXTAUTH_URL: https://${PUBLIC_DOMAIN:?set PUBLIC_DOMAIN in .env}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:?set NEXTAUTH_SECRET in .env}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      BACKEND_URL: http://backend:8000
+      # nginx-proxy + acme-companion:
+      VIRTUAL_HOST: ${PUBLIC_DOMAIN:?set PUBLIC_DOMAIN in .env}
+      VIRTUAL_PORT: "3000"
+      # Upload-Obergrenze: Die AKTUELLE nginx-proxy-Template-Version ignoriert dieses
+      # Env — die echte 26m-Grenze wird per vhost.d-Snippet gesetzt, siehe
+      # infra/nginx-vhost.d/README.md. Env bleibt für den Fall eines Proxy-Upgrades,
+      # das CLIENT_MAX_BODY_SIZE wieder unterstützt. (26m = knapp über Backend-25-MB,
+      # damit das Backend die freundliche „max 25 MB“-Meldung liefert statt 413.)
+      CLIENT_MAX_BODY_SIZE: 26m
+      LETSENCRYPT_HOST: ${PUBLIC_DOMAIN:?set PUBLIC_DOMAIN in .env}
+      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL:?set LETSENCRYPT_EMAIL in .env}
+    depends_on:
+      backend: {condition: service_started}
+    networks: [agentworks-internal, proxy-net]
+
+  searxng:
+    image: searxng/searxng:latest
+    container_name: agentworks-searxng
+    restart: unless-stopped
+    environment:
+      SEARXNG_SECRET: ${SEARXNG_SECRET:?set SEARXNG_SECRET in .env.prod}
+      SEARXNG_BASE_URL: http://searxng:8080/
+    volumes:
+      - ./searxng:/etc/searxng:rw
+    networks: [agentworks-internal]
+
+  mcp-demo:
+    image: node:22-alpine
+    container_name: agentworks-mcp-demo
+    restart: unless-stopped
+    # --outputTransport streamableHttp (stateless=Standard) startet pro Anfrage einen neuen
+    # stdio-Prozess → unterstützt gleichzeitige Verbindungen (kein "Already connected"-Crash).
+    command: >
+      npx -y supergateway
+      --stdio "npx -y @modelcontextprotocol/server-everything"
+      --port 8080
+      --outputTransport streamableHttp
+      --streamableHttpPath /mcp
+    networks: [agentworks-internal]
+
+networks:
+  agentworks-internal:
+  proxy-net:
+    external: true
+
+volumes:
+  agentworks_db:
+  agentworks_redis:
+  agentworks_media:

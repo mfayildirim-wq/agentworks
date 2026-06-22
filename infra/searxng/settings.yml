@@ -1,0 +1,11 @@
+# Minimal-Config für die interne Agenten-Suche. JSON-Format ist nötig (Default aus).
+# secret_key wird beim Start vom searxng-Image aus $SEARXNG_SECRET ersetzt.
+use_default_settings: true
+server:
+  secret_key: "ultrasecretkey"
+  limiter: false
+  image_proxy: false
+search:
+  formats:
+    - html
+    - json

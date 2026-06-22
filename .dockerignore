@@ -1,0 +1,15 @@
+# Gilt für den Backend-Build (Context = Repo-Root).
+.git
+**/__pycache__
+**/*.pyc
+**/.venv
+**/.venv-check
+**/.pytest_cache
+**/.ruff_cache
+frontend
+docs
+scripts
+infra
+**/*.db
+**/.env
+**/.env.*

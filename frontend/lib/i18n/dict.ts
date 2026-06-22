@@ -1,0 +1,262 @@
+// Zweisprachiges UI-Wörterbuch (Deutsch + Englisch). Pro Schlüssel ein Eintrag je
+// Sprache. Neue UI-Texte hier ergänzen und in der Komponente via `t("key")` nutzen.
+export type Lang = "de" | "en";
+
+export const DICT = {
+  // Navigation
+  "nav.marketplace": { de: "Marktplatz", en: "Marketplace" },
+  "nav.myAgents": { de: "Meine Agenten", en: "My Agents" },
+  "nav.public": { de: "Öffentlich", en: "Public" },
+  "nav.profile": { de: "Profil", en: "Profile" },
+  "nav.signout": { de: "Abmelden", en: "Sign out" },
+  "nav.login": { de: "Mit Google anmelden", en: "Login with Google" },
+  "nav.account": { de: "Konto", en: "Account" },
+
+  // Agent-UI-Einstellungen
+  "settings.title": { de: "Agent-UI-Einstellungen", en: "Agent UI settings" },
+  "settings.language": { de: "Sprache", en: "Language" },
+  "settings.newInstance": { de: "Neue Instanz", en: "New instance" },
+  "settings.view": { de: "Ansicht", en: "View" },
+  "settings.viewStandard": { de: "Standard", en: "Standard" },
+  "settings.viewMenu": { de: "Links-Menü", en: "Side menu" },
+  "settings.viewGrid": { de: "Kachel", en: "Grid" },
+  "settings.chatResult": { de: "Chat/Ergebnis", en: "Chat / result" },
+  "settings.horizontal": { de: "Horizontal", en: "Horizontal" },
+  "settings.vertical": { de: "Vertikal", en: "Vertical" },
+  "settings.instanceConfig": { de: "Instanz-Konfig", en: "Instance config" },
+  "settings.template": { de: "Template", en: "Template" },
+  "settings.externalPage": { de: "Externe Seite", en: "External page" },
+
+  // Marktplatz-Filter
+  "market.myAgents": { de: "Meine Agenten", en: "My Agents" },
+  "market.popular": { de: "Beliebte", en: "Popular" },
+  "market.all": { de: "Alle", en: "All" },
+  "market.search": { de: "Suche", en: "Search" },
+  "market.templatesCount": { de: "{n} Vorlagen", en: "{n} templates" },
+  "market.empty": { de: "Noch keine öffentlichen Vorlagen vorhanden.", en: "No public templates yet." },
+  "market.noOwn": { de: "Du hast noch keine eigenen Vorlagen erstellt.", en: "You haven't created any templates yet." },
+  "market.activeInstances": { de: "aktive Instanzen", en: "active instances" },
+  "market.ownTemplates": { de: "Vorlagen", en: "templates" },
+  "market.planned": { de: "geplant", en: "scheduled" },
+  "market.searchBtn": { de: "Suche", en: "Search" },
+  "market.searchSubmit": { de: "Suchen", en: "Search" },
+  "market.searchPlaceholder": { de: "Titel, Beschreibung oder Prompt…", en: "Title, description or prompt…" },
+  "market.searchResult": { de: "Suche „{q}“: {n} Vorlagen", en: "Search “{q}”: {n} templates" },
+  "market.reset": { de: "× zurücksetzen", en: "× reset" },
+  "market.noneFound": { de: "Keine Vorlagen zu „{q}“ gefunden.", en: "No templates found for “{q}”." },
+  "market.noneInCat": { de: "Keine Vorlagen in „{cat}“.", en: "No templates in “{cat}”." },
+
+  // Meine Agenten (Panel)
+  "my.templates": { de: "Vorlagen", en: "templates" },
+  "my.activeInstances": { de: "aktive Instanzen", en: "active instances" },
+  "my.scheduled": { de: "geplant", en: "scheduled" },
+  "my.noTemplates": { de: "Noch keine eigenen Vorlagen —", en: "No templates of your own yet —" },
+  "my.createTemplate": { de: "Agent-Vorlage erstellen", en: "create an agent template" },
+
+  // Master-Seite
+  "master.noResults": { de: "Noch keine Ergebnisse", en: "No results yet" },
+  "master.lookMarketplace": { de: "Schau im Marktplatz nach fertigen Agent-Vorlagen.", en: "Browse the marketplace for ready-made agent templates." },
+  "master.edit": { de: "Bearbeiten", en: "Edit" },
+  "master.viewResult": { de: "Ansehen", en: "View" },
+  "master.notPublished": { de: "{name} hat noch nichts veröffentlicht", en: "{name} hasn't published anything yet" },
+  "master.lookPre": { de: "Schau im", en: "Browse the" },
+  "master.lookPost": { de: "nach fertigen Agent-Vorlagen.", en: "for ready-made agent templates." },
+
+  // Template-Detail / neue Instanz
+  "tpl.yourInstances": { de: "Deine Instanzen", en: "Your instances" },
+  "tpl.newInstance": { de: "Neue Instanz starten", en: "Start a new instance" },
+  "tpl.description": { de: "Beschreibung", en: "Description" },
+  "tpl.ready": { de: "fertig", en: "ready" },
+  "tpl.running": { de: "läuft…", en: "running…" },
+  "tpl.works": { de: "works", en: "works" },
+  "tpl.name": { de: "Name", en: "Name" },
+  "tpl.nameHint": { de: "Der Agent legt los und fragt im Chat nach den Details.", en: "The agent starts and asks for details in chat." },
+  "tpl.start": { de: "Loslegen", en: "Let's go" },
+  "tpl.starting": { de: "Starte…", en: "Starting…" },
+  "tpl.error": { de: "Fehler", en: "Error" },
+  "tpl.namePlaceholder": { de: "z.B. London-Trip — so heißt deine Instanz", en: "e.g. London trip — this is your instance's name" },
+
+  // Aufgaben (geplant)
+  "jobs.title": { de: "Aufgaben", en: "Tasks" },
+  "jobs.intro": { de: "Zeitgesteuerte Aufgaben dieser Instanz. Der Agent legt sie an, wenn du es im Chat besprichst.", en: "Scheduled tasks of this instance. The agent creates them when you discuss it in chat." },
+  "jobs.none": { de: "Noch keine Aufgaben — besprich im Chat, was regelmäßig passieren soll.", en: "No tasks yet — discuss in chat what should happen regularly." },
+  "jobs.once": { de: "einmalig", en: "one-time" },
+  "jobs.nextRun": { de: "nächster Lauf", en: "next run" },
+  "jobs.runs": { de: "Läufe", en: "runs" },
+  "jobs.hourly": { de: "stündlich", en: "hourly" },
+  "jobs.daily": { de: "täglich", en: "daily" },
+  "jobs.weekly": { de: "wöchentlich", en: "weekly" },
+
+  // Profil-Tabs
+  "ptab.profile": { de: "Profil", en: "Profile" },
+  "ptab.costs": { de: "Kosten", en: "Costs" },
+  "ptab.friends": { de: "Freunde", en: "Friends" },
+  "ptab.moderation": { de: "Moderation", en: "Moderation" },
+  "ptab.admin": { de: "Admin", en: "Admin" },
+  "ptab.system": { de: "System", en: "System" },
+
+  // Profil
+  "profile.title": { de: "Profil", en: "Profile" },
+  "profile.name": { de: "Name", en: "Name" },
+  "profile.notifyEmail": { de: "E-Mail-Benachrichtigung", en: "Email notifications" },
+  "profile.notifyTelegram": { de: "Telegram-Benachrichtigung", en: "Telegram notifications" },
+  "profile.balance": { de: "Guthaben", en: "Balance" },
+  "profile.email": { de: "E-Mail", en: "Email" },
+  "profile.telegramLinkFailed": { de: "Telegram-Verbindung fehlgeschlagen.", en: "Telegram connection failed." },
+  "profile.telegramNotConfigured": { de: "Telegram-Bot ist serverseitig noch nicht konfiguriert.", en: "Telegram bot is not yet configured on the server." },
+  "profile.telegramStartHint": { de: "Drücke im Telegram-Chat auf „Start“ — danach diese Seite neu laden.", en: "Tap “Start” in the Telegram chat — then reload this page." },
+  "profile.telegramDisconnected": { de: "Telegram getrennt.", en: "Telegram disconnected." },
+  "profile.saveFailed": { de: "Speichern fehlgeschlagen.", en: "Saving failed." },
+  "profile.saved": { de: "Gespeichert.", en: "Saved." },
+  "profile.networkError": { de: "Netzwerkfehler.", en: "Network error." },
+  "profile.notifications": { de: "Benachrichtigungen", en: "Notifications" },
+  "profile.notificationsHint": { de: "Bei geplanten Updates deiner Agenten bekommst du eine Nachricht mit Link.", en: "When your agents have scheduled updates, you get a message with a link." },
+  "profile.telegram": { de: "Telegram", en: "Telegram" },
+  "profile.connected": { de: "verbunden", en: "connected" },
+  "profile.notConnected": { de: "nicht verbunden", en: "not connected" },
+  "profile.disconnect": { de: "Trennen", en: "Disconnect" },
+  "profile.connect": { de: "Verbinden", en: "Connect" },
+  "profile.emailNotifications": { de: "E-Mail-Benachrichtigungen", en: "Email notifications" },
+  "profile.telegramNotifications": { de: "Telegram-Benachrichtigungen", en: "Telegram notifications" },
+  "profile.saving": { de: "Speichert…", en: "Saving…" },
+
+  // Login-Gate
+  "login.loading": { de: "Lade…", en: "Loading…" },
+  "login.pleaseLogin": { de: "Bitte einloggen", en: "Please log in" },
+  "login.usesGoogle": { de: "AgentWorks nutzt Google Login.", en: "AgentWorks uses Google login." },
+  "login.continueGoogle": { de: "Mit Google fortfahren", en: "Continue with Google" },
+
+  // Preise
+  "preise.title": { de: "Preise", en: "Pricing" },
+  "preise.intro": { de: "Preise pro 1 Mio. Tokens (inkl. Portal-Marge). Abgerechnet wird die tatsächliche Nutzung je Lauf. Der erste Lauf jeder Instanz ist gratis.", en: "Prices per 1 million tokens (incl. portal margin). Actual usage per run is billed. The first run of each instance is free." },
+  "preise.provider": { de: "Anbieter", en: "Provider" },
+  "preise.model": { de: "Modell", en: "Model" },
+  "preise.input": { de: "Input", en: "Input" },
+  "preise.output": { de: "Output", en: "Output" },
+
+  // Work-View (Instanz-Arbeitsansicht)
+  "wv.connection": { de: "Verbindung", en: "Connection" },
+  "wv.result": { de: "Ergebnis", en: "Result" },
+  "wv.chat": { de: "Chat", en: "Chat" },
+  "wv.publish": { de: "Veröffentlichen", en: "Publish" },
+  "wv.publishing": { de: "Veröffentliche…", en: "Publishing…" },
+  "wv.error": { de: "Fehler", en: "Error" },
+  "wv.connSaved": { de: "{kind}: Verbindung gespeichert ✅", en: "{kind}: connection saved ✅" },
+  "wv.saveFailed": { de: "Speichern fehlgeschlagen", en: "Saving failed" },
+  "wv.uploadFailed": { de: "Upload fehlgeschlagen", en: "Upload failed" },
+  "wv.agentSlow": { de: "Der Agent braucht noch — bitte gleich neu laden.", en: "The agent needs a moment — please reload shortly." },
+  "wv.tookLonger": { de: "Dauert länger als erwartet — lade die Seite gleich neu.", en: "Taking longer than expected — reload the page shortly." },
+  "wv.networkRetry": { de: "Netzwerkfehler — bitte erneut versuchen.", en: "Network error — please try again." },
+  "wv.noTabsYet": { de: "Diese Ausgabe hat noch keine Tabs.", en: "This output has no tabs yet." },
+  "wv.confirmAction": { de: "Aktion ausführen: {prompt}", en: "Run action: {prompt}" },
+  "wv.visibility": { de: "Sichtbarkeit", en: "Visibility" },
+  "wv.private": { de: "Privat", en: "Private" },
+  "wv.friends": { de: "Freunde", en: "Friends" },
+  "wv.public": { de: "Öffentlich", en: "Public" },
+  "wv.copied": { de: "Kopiert!", en: "Copied!" },
+  "wv.copyLink": { de: "Link /p/ kopieren", en: "Copy /p/ link" },
+  "wv.openExternalTitle": { de: "Öffentliche Seite in neuem Tab öffnen", en: "Open public page in new tab" },
+  "wv.open": { de: "Öffnen ↗", en: "Open ↗" },
+  "wv.shareable": { de: "Teilbar:", en: "Shareable:" },
+  "wv.instanceCost": { de: "Kosten dieser Instanz: ${cost}", en: "Cost of this instance: ${cost}" },
+  "wv.thisAppUsage": { de: "Verbrauch dieser App", en: "Usage of this app" },
+  "wv.thisApp": { de: "diese App: ${cost}", en: "this app: ${cost}" },
+  "wv.yourBalance": { de: "Dein Guthaben", en: "Your balance" },
+  "wv.balance": { de: "Guthaben: ${balance}", en: "Balance: ${balance}" },
+  "wv.versions": { de: "Versionen ({n})", en: "Versions ({n})" },
+  "wv.noVersions": { de: "Noch keine Versionen.", en: "No versions yet." },
+  "wv.view": { de: "Ansehen", en: "View" },
+  "wv.restore": { de: "Wiederherstellen", en: "Restore" },
+  "wv.previewV": { de: "Vorschau v{n}", en: "Preview v{n}" },
+  "wv.close": { de: "schließen", en: "close" },
+  "wv.rateAgent": { de: "Diesen Agenten bewerten", en: "Rate this agent" },
+  "wv.outOf5": { de: "{s} von 5", en: "{s} of 5" },
+  "wv.stars": { de: "{s} Sterne", en: "{s} stars" },
+  "wv.saved": { de: "Gespeichert ✓", en: "Saved ✓" },
+  "wv.commentOptional": { de: "Kommentar (optional)", en: "Comment (optional)" },
+  "wv.balanceUsedUp": { de: "Guthaben aufgebraucht.", en: "Balance used up." },
+  "wv.topUpNow": { de: "Jetzt aufladen", en: "Top up now" },
+  "wv.toContinue": { de: ", um weiter zu arbeiten.", en: " to keep working." },
+  "wv.pageUpdated": { de: "✏️ Seite aktualisiert (v{n})", en: "✏️ Page updated (v{n})" },
+  "wv.agentThinking": { de: "Agent denkt…", en: "Agent is thinking…" },
+  "wv.tabs": { de: "Tabs", en: "Tabs" },
+  "wv.closeTabs": { de: "Tabs schließen", en: "Close tabs" },
+  "wv.loading": { de: "Lädt…", en: "Loading…" },
+  "wv.layout": { de: "Layout:", en: "Layout:" },
+  "wv.sections": { de: "Abschnitte", en: "Sections" },
+  "wv.noTabsHint": { de: "Noch keine Tabs. Es entsteht ein neuer Tab pro Ergebnis (Ausgabe-Modus im „/“-Menü).", en: "No tabs yet. A new tab is created per result (output mode in the “/” menu)." },
+  "wv.save": { de: "Speichern", en: "Save" },
+  "wv.moveUp": { de: "Nach oben", en: "Move up" },
+  "wv.moveDown": { de: "Nach unten", en: "Move down" },
+  "wv.delete": { de: "Löschen", en: "Delete" },
+  "wv.mode": { de: "Modus: {label}", en: "Mode: {label}" },
+  "wv.resetMode": { de: "Modus zurücksetzen", en: "Reset mode" },
+  "wv.removeAttachment": { de: "Anhang entfernen", en: "Remove attachment" },
+  "wv.attachFile": { de: "Datei anhängen", en: "Attach file" },
+  "wv.commands": { de: "Befehle", en: "Commands" },
+  "wv.newNamedTab": { de: "➕ Neuer Tab (benannt)", en: "➕ New tab (named)" },
+  "wv.tabNamePlaceholder": { de: "Tab-Name…", en: "Tab name…" },
+  "wv.ok": { de: "OK", en: "OK" },
+  "wv.noCommands": { de: "Keine Befehle.", en: "No commands." },
+  "wv.modeLabel": { de: "Modus", en: "Mode" },
+  "wv.actionLabel": { de: "Aktion", en: "Action" },
+  "wv.templateHeading": { de: "Vorlage", en: "Template" },
+  "wv.inputPlaceholder": { de: "Eingabe…", en: "Input…" },
+  "wv.chatPlaceholder": { de: "Schreib dem Agenten… (z.B. Ziel, Datum, oder „Füge Tag 2 hinzu“)", en: "Message the agent… (e.g. destination, date, or “Add day 2”)" },
+  "wv.send": { de: "Senden", en: "Send" },
+  "wv.resultV": { de: "Ergebnis (v{n})", en: "Result (v{n})" },
+  "wv.resultPlain": { de: "Ergebnis", en: "Result" },
+  "wv.noPage": { de: "Noch keine Seite", en: "No page yet" },
+  "wv.connectedAs": { de: "✓ Verbunden: {who}", en: "✓ Connected: {who}" },
+  "wv.connectGoogle": { de: "Mit Google verbinden", en: "Connect with Google" },
+  "wv.secretUnchanged": { de: "{label} (leer = unverändert)", en: "{label} (empty = unchanged)" },
+  "wv.saveNamed": { de: "{name} speichern", en: "Save {name}" },
+  "wv.stored": { de: "hinterlegt", en: "stored" },
+  "wv.mcpSecretUnchanged": { de: "{label} (leer = unverändert)", en: "{label} (empty = unchanged)" },
+  "wv.preparedPost": { de: "Vorbereiteter Beitrag", en: "Prepared post" },
+  "wv.noContentChat": { de: "Noch kein Inhalt — beantworte die Fragen im Chat.", en: "No content yet — answer the questions in chat." },
+  "wv.externalPage": { de: "Externe Seite", en: "External page" },
+  "wv.openInNewTab": { de: "in neuem Tab öffnen ↗", en: "open in new tab ↗" },
+  "wv.noContentChatPage": { de: "Noch kein Inhalt — beantworte die Fragen im Chat, dann entsteht hier deine Seite.", en: "No content yet — answer the questions in chat, then your page appears here." },
+  "wv.files": { de: "Dateien ({n})", en: "Files ({n})" },
+  "wv.filterAll": { de: "Alle", en: "All" },
+  "wv.filterImages": { de: "Bilder", en: "Images" },
+  "wv.filterDocs": { de: "Dokumente", en: "Documents" },
+  "wv.noImages": { de: "Keine Bilder.", en: "No images." },
+  "wv.noDocs": { de: "Keine Dokumente.", en: "No documents." },
+  "wv.deleteFile": { de: "Datei löschen", en: "Delete file" },
+  "wv.dragSplit": { de: "Ziehen, um die Aufteilung zu ändern", en: "Drag to change the split" },
+
+  // Allgemein
+  "common.loading": { de: "Lädt…", en: "Loading…" },
+  "common.save": { de: "Speichern", en: "Save" },
+  "common.cancel": { de: "Abbrechen", en: "Cancel" },
+  "common.delete": { de: "Löschen", en: "Delete" },
+  "common.open": { de: "Öffnen", en: "Open" },
+  "common.edit": { de: "Bearbeiten", en: "Edit" },
+  "common.share": { de: "Teilen", en: "Share" }
+} as const;
+
+// Kategorie-Labels: der DB-Wert ist ENGLISCH (kanonisch). Für deutsche Anzeige
+// wird über diese Map übersetzt; Englisch zeigt den Wert direkt.
+const CATEGORY_DE: Record<string, string> = {
+  Everyday: "Alltag", Planner: "Planer", Software: "Software", Tech: "Technik",
+  Timer: "Timer", Work: "Beruf", Finance: "Finanzen", Education: "Bildung",
+  Travel: "Reise", Health: "Gesundheit", Marketing: "Marketing", Legal: "Recht",
+  Creative: "Kreativ", Data: "Daten", Communication: "Kommunikation",
+  Entertainment: "Unterhaltung", Household: "Haushalt", Knowledge: "Wissen",
+  Sports: "Sport", Other: "Sonstiges"
+};
+
+export function categoryLabel(lang: Lang, cat: string): string {
+  return lang === "de" ? CATEGORY_DE[cat] ?? cat : cat;
+}
+
+export type MsgKey = keyof typeof DICT;
+
+export function translate(lang: Lang, key: MsgKey, vars?: Record<string, string | number>): string {
+  const entry = DICT[key];
+  let s: string = (entry && entry[lang]) || (entry && entry.de) || key;
+  if (vars) for (const [k, v] of Object.entries(vars)) s = s.replace(`{${k}}`, String(v));
+  return s;
+}
